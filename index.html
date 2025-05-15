@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Consulta FEDEPRUS - Hospital Carlos Van Buren</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e6f1e6;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  header {
+    background-color: #2f7a1f;
+    color: white;
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+  }
+  header img {
+    height: 80px;
+    vertical-align: middle;
+  }
+  header h1 {
+    display: inline-block;
+    margin-left: 15px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  main {
+    background: white;
+    border-radius: 10px;
+    padding: 30px 40px;
+    margin: 30px 0;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+  }
+  input[type="text"] {
+    width: 100%;
+    font-size: 1.1em;
+    padding: 8px;
+    border: 2px solid #2f7a1f;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  button {
+    background-color: #2f7a1f;
+    color: white;
+    font-size: 1.1em;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+  }
+  button:hover {
+    background-color: #1f5414;
+  }
+  #resultado {
+    margin-top: 20px;
+    font-weight: 700;
+    font-size: 1.2em;
+  }
+  .error {
+    color: #d93025;
+  }
+  .success {
+    color: #2f7a1f;
+  }
+</style>
+</head>
+<body>
+<header>
+  <img src="logo_fedeprus.png" alt="Logo FEDEPRUS" />
+  <h1>FEDEPRUS - Hospital Carlos Van Buren</h1>
+</header>
+<main>
+  <form id="formRut" onsubmit="return validarYBuscar()">
+    <label for="rut">Ingrese su RUT (formato: 12.345.678-9):</label>
+    <input type="text" id="rut" name="rut" placeholder="Ejemplo: 12.345.678-9" required autocomplete="off" />
+    <button type="submit">Consultar</button>
+  </form>
+  <div id="resultado"></div>
+</main>
+
+<script>
+// Ejemplo lista de RUTs vigentes
+const listaRut = [
+  "12.345.678-5",
+  "11.222.333-4",
+  "20.123.456-7",
+  "9.876.543-2"
+];
+
+// Función para validar formato RUT chileno
+function validarFormatoRut(rut) {
+  // Regex para formato con puntos y guion (puede aceptarse sin puntos)
+  const regex = /^(\d{1,2}\.\d{3}\.\d{3}-[\dkK])|(\d{7,8}-[\dkK])$/;
+  return regex.test(rut);
+}
+
+function limpiarRut(rut) {
+  return rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
+}
+
+// Validación y búsqueda
+function validarYBuscar() {
+  const rutInput = document.getElementById('rut');
+  const resultado = document.getElementById('resultado');
+  const rut = rutInput.value.trim();
+
+  // Validar formato
+  if (!validarFormatoRut(rut)) {
+    resultado.textContent = "Formato de RUT incorrecto. Debe ser como 12.345.678-9 o 12345678-9.";
+    resultado.className = 'error';
+    return false; // No enviar formulario
+  }
+
+  // Verificar si el RUT está en la lista
+  // Limpiamos formato para comparar de manera uniforme
+  const rutFormateado = limpiarRut(rut);
+  const encontrado = listaRut.some(r => limpiarRut(r) === rutFormateado);
+
+  if (encontrado) {
+    resultado.textContent = "El RUT está vigente en el gremio FEDEPRUS.";
+    resultado.className = 'success';
+  } else {
+    resultado.textContent = "El RUT no se encuentra en la lista de vigentes.";
+    resultado.className = 'error';
+  }
+  return false; // evitar que recargue la página
+}
+</script>
+</body>
+</html>
